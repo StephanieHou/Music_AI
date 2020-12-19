@@ -1,5 +1,9 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { registerUser } from "../../actions/auth";
+import classnames from "classnames";
 
 class Register extends Component {
     constructor() {
@@ -12,6 +16,14 @@ class Register extends Component {
             cpassword: "",
             errors: {}
         };
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.errors) {
+            this.setState({
+                errors: nextProps.errors
+            });
+        }
     }
 
     onChange = e => {
@@ -27,7 +39,8 @@ class Register extends Component {
             password: this.state.password,
             cpassword: this.state.cpassword
         };
-        console.log(newUser);
+
+        this.props.registerUser(newUser, this.props.history);
     };
 
     render() {
@@ -37,7 +50,7 @@ class Register extends Component {
                 <div className="row">
                     <div className="col s8 offset-s2">
                         <Link to="/" className="btn-flat waves-effect">
-                            <i className="material-icons left">keyboard_backspace</i> 
+                            <i className="material-icons left">keyboard_backspace</i>
                             Back to Home
                         </Link>
                         <div className="col s12" style={{ paddingLeft: "11.250px" }}>
@@ -45,7 +58,7 @@ class Register extends Component {
                                 <b>Register</b>
                             </h4>
                             <p className="grey-text text-darken-1">
-                                Already have an account? 
+                                Already have an account?
                                 <Link to="/login">Log in</Link>
                             </p>
                         </div>
@@ -55,20 +68,28 @@ class Register extends Component {
                                     onChange={this.onChange}
                                     value={this.state.first_name}
                                     error={errors.first_name}
-                                    id="name"
+                                    id="first_name"
                                     type="text"
+                                    className={classnames("", {
+                                        invalid: errors.first_name
+                                    })}
                                 />
-                                <label htmlFor="name">First Name</label>
+                                <label htmlFor="first_name">First Name</label>
+                                <span className="red-text">{errors.first_name}</span>
                             </div>
                             <div className="input-field col s12">
                                 <input
                                     onChange={this.onChange}
                                     value={this.state.last_name}
                                     error={errors.last_name}
-                                    id="name"
+                                    id="last_name"
                                     type="text"
+                                    className={classnames("", {
+                                        invalid: errors.last_name
+                                    })}
                                 />
-                                <label htmlFor="name">Last Name</label>
+                                <label htmlFor="last_name">Last Name</label>
+                                <span className="red-text">{errors.last_name}</span>
                             </div>
                             <div className="input-field col s12">
                                 <input
@@ -77,8 +98,12 @@ class Register extends Component {
                                     error={errors.email}
                                     id="email"
                                     type="email"
+                                    className={classnames("", {
+                                        invalid: errors.email
+                                    })}
                                 />
                                 <label htmlFor="email">Email</label>
+                                <span className="red-text">{errors.email}</span>
                             </div>
                             <div className="input-field col s12">
                                 <input
@@ -87,8 +112,12 @@ class Register extends Component {
                                     error={errors.password}
                                     id="password"
                                     type="password"
+                                    className={classnames("", {
+                                        invalid: errors.password
+                                    })}
                                 />
                                 <label htmlFor="password">Password</label>
+                                <span className="red-text">{errors.password}</span>
                             </div>
                             <div className="input-field col s12">
                                 <input
@@ -97,8 +126,12 @@ class Register extends Component {
                                     error={errors.cpassword}
                                     id="cpassword"
                                     type="password"
+                                    className={classnames("", {
+                                        invalid: errors.cpassword
+                                    })}
                                 />
                                 <label htmlFor="cpassword">Confirm Password</label>
+                                <span className="red-text">{errors.cpassword}</span>
                             </div>
                             <div className="col s12" style={{ paddingLeft: "11.250px" }}>
                                 <button
@@ -121,4 +154,17 @@ class Register extends Component {
         );
     }
 }
-export default Register;
+
+Register.propTypes = {
+    registerUser: PropTypes.func.isRequired,
+    auth: PropTypes.object.isRequired,
+    errors: PropTypes.object.isRequired
+};
+const mapStateToProps = state => ({
+    auth: state.auth,
+    errors: state.errors
+});
+export default connect(
+    mapStateToProps,
+    { registerUser }
+)(withRouter(Register));
