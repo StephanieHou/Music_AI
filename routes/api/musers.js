@@ -62,6 +62,7 @@ router.post("/login", (req, res) => {
             return res.status(404).json({ notfound: "Could Not Find Email" });
         }
 
+        // LOOK FOR SECURE COMPARSION - ATTACK VECTOR 
         bcrypt.compare(password, muser.password).then(isMatch => {
             if (isMatch) {
                 const payload = {
